@@ -4,7 +4,11 @@ import os
 import plotly.express as px
 
 # 定義 CSV 檔案路徑
-CSV_FILE_PATH = "charts/nba_fantasy_ranking_top150.csv"
+
+# 取得當前腳本目錄
+script_dir = os.path.dirname(os.path.abspath(__file__))
+# 定義 CSV 檔案的絕對路徑
+CSV_FILE_PATH = os.path.join(script_dir, "charts", "nba_fantasy_ranking_top150.csv")
 
 # --- Streamlit 應用程式介面 --- 
 st.set_page_config(layout="wide")
@@ -15,7 +19,7 @@ st.markdown('This dashboard provides a predicted ranking of NBA players for your
 @st.cache_data # 使用 Streamlit 的緩存功能，避免每次運行都重新載入數據
 def load_data(path):
     if not os.path.exists(path):
-        st.error(f"Error: CSV file not found at {path}. Please ensure 'nba_fantasy_ranking_top150.csv' exists in the 'charts' directory.")
+        st.error(f"Error: CSV file not found at {path}. Please ensure 'nba_fantasy_ranking_top150.csv' exists in the 'charts' directory relative to the script.")
         return pd.DataFrame()
     df = pd.read_csv(path)
     return df
