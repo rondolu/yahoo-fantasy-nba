@@ -5,15 +5,16 @@ import numpy as np
 import os
 from sklearn.preprocessing import MinMaxScaler
 
-# 定義圖片保存路徑
-CHARTS_DIR = "charts"
+# 獲取當前腳本的目錄
+script_dir = os.path.dirname(__file__)
+
+# 定義圖片保存路徑，相對於腳本所在目錄
+CHARTS_DIR = os.path.join(script_dir, "charts")
 
 # 確保圖片保存目錄存在
 os.makedirs(CHARTS_DIR, exist_ok=True)
 
 # --- 數據載入和初步清洗 ---
-# 獲取當前腳本的目錄
-script_dir = os.path.dirname(__file__)
 # 構建數據檔案的絕對路徑
 # 從 script_dir (nba_analysis_scripts) 向上一個目錄 (yahoo-fantasy-mlb)，然後進入 data 資料夾
 data_file_path = os.path.join(script_dir, "..", "data", "nba_player_stats_2025.csv")
