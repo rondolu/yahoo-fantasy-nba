@@ -6,14 +6,20 @@ import os
 from sklearn.preprocessing import MinMaxScaler
 
 # 定義圖片保存路徑
-CHARTS_DIR = "/charts"
+CHARTS_DIR = "charts"
 
 # 確保圖片保存目錄存在
 os.makedirs(CHARTS_DIR, exist_ok=True)
 
 # --- 數據載入和初步清洗 ---
+# 獲取當前腳本的目錄
+script_dir = os.path.dirname(__file__)
+# 構建數據檔案的絕對路徑
+# 從 script_dir (nba_analysis_scripts) 向上一個目錄 (yahoo-fantasy-mlb)，然後進入 data 資料夾
+data_file_path = os.path.join(script_dir, "..", "data", "nba_player_stats_2025.csv")
+
 # 載入數據
-df = pd.read_csv("../data/nba_player_stats_2025.csv")
+df = pd.read_csv(data_file_path)
 
 # 處理 FGM/A 和 FTM/A 這種 'X/Y' 格式的數據
 def parse_fraction(s):
