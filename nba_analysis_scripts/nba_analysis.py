@@ -6,14 +6,14 @@ import os
 from sklearn.preprocessing import MinMaxScaler
 
 # 定義圖片保存路徑
-CHARTS_DIR = "C:/Users/20241030/yahoo-fantasy-mlb/nba_analysis_scripts/charts"
+CHARTS_DIR = "/charts"
 
 # 確保圖片保存目錄存在
 os.makedirs(CHARTS_DIR, exist_ok=True)
 
 # --- 數據載入和初步清洗 ---
 # 載入數據
-df = pd.read_csv("C:/Users/20241030/yahoo-fantasy-mlb/data/nba_player_stats_2025.csv")
+df = pd.read_csv("../data/nba_player_stats_2025.csv")
 
 # 處理 FGM/A 和 FTM/A 這種 'X/Y' 格式的數據
 def parse_fraction(s):

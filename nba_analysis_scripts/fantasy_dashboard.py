@@ -4,7 +4,7 @@ import os
 import plotly.express as px
 
 # 定義 CSV 檔案路徑
-CSV_FILE_PATH = "C:/Users/20241030/yahoo-fantasy-mlb/nba_analysis_scripts/charts/nba_fantasy_ranking_top150.csv"
+CSV_FILE_PATH = "charts/nba_fantasy_ranking_top150.csv"
 
 # --- Streamlit 應用程式介面 --- 
 st.set_page_config(layout="wide")
