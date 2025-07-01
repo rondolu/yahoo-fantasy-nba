@@ -1,6 +1,6 @@
 # Yahoo Fantasy NBA Stats Scraper
 
-This project fetches MLB player data from the Yahoo Fantasy Sports API for the 2025 season and exports it to a CSV file.
+This project fetches NBA player data from the Yahoo Fantasy Sports API for the 2025 season and exports it to a CSV file.
 
 ## Prerequisites
 
