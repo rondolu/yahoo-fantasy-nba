@@ -1,23 +1,35 @@
+"""
+This module provides a Streamlit dashboard for visualizing NBA fantasy basketball rankings.
+
+It loads player ranking data from a CSV file and presents it in an interactive table
+and a bar chart, allowing users to filter by position and search for players.
+"""
+
 import streamlit as st
 import pandas as pd
 import os
 import plotly.express as px
 
-# 定義 CSV 檔案路徑
-
-# 取得當前腳本目錄
+# Get the directory of the current script
 script_dir = os.path.dirname(os.path.abspath(__file__))
-# 定義 CSV 檔案的絕對路徑
+# Define the absolute path to the CSV file
 CSV_FILE_PATH = os.path.join(script_dir, "charts", "nba_fantasy_ranking_top150.csv")
 
-# --- Streamlit 應用程式介面 --- 
 st.set_page_config(layout="wide")
 st.title('🏀 Yahoo Fantasy Basketball 2025 Draft Ranking')
 st.markdown('This dashboard provides a predicted ranking of NBA players for your Yahoo Fantasy Basketball league (9-category format), based on the provided 2025 player stats.')
 
-# 載入數據
-@st.cache_data # 使用 Streamlit 的緩存功能，避免每次運行都重新載入數據
+@st.cache_data
 def load_data(path):
+    """
+    Loads player ranking data from a CSV file.
+
+    Args:
+        path (str): The path to the CSV file.
+
+    Returns:
+        pd.DataFrame: A DataFrame containing the player ranking data.
+    """
     if not os.path.exists(path):
         st.error(f"Error: CSV file not found at {path}. Please ensure 'nba_fantasy_ranking_top150.csv' exists in the 'charts' directory relative to the script.")
         return pd.DataFrame()
@@ -29,14 +41,14 @@ df_ranked = load_data(CSV_FILE_PATH)
 if not df_ranked.empty:
     st.sidebar.header('Filter Options')
 
-    # 位置篩選器
+    # Position filter
     all_positions = ['All Positions'] + sorted(df_ranked['primary_position'].unique().tolist())
     selected_position = st.sidebar.selectbox('Select Primary Position', all_positions)
 
-    # 球員搜尋器
+    # Player search
     search_query = st.sidebar.text_input('Search Player Name', '')
 
-    # 應用篩選
+    # Apply filters
     filtered_df = df_ranked.copy()
     if selected_position != 'All Positions':
         filtered_df = filtered_df[filtered_df['primary_position'] == selected_position]
@@ -48,7 +60,6 @@ if not df_ranked.empty:
     st.dataframe(filtered_df)
 
     st.subheader('Top 20 Players by Fantasy Score')
-    # 確保數據不為空，避免繪圖錯誤
     if not filtered_df.empty:
         top_20_players = filtered_df.head(20)
         fig = px.bar(top_20_players, x='full_name', y='Fantasy_Score', 

@@ -1,65 +1,68 @@
+"""
+Handles all interactions with the Yahoo Fantasy Sports API.
+
+This module provides a class to authenticate with the Yahoo API using OAuth2
+and to make requests to various fantasy sports endpoints.
+"""
+
 import os
-import json
-from requests_oauthlib import OAuth2Session
-from oauthlib.oauth2 import BackendApplicationClient
-from dotenv import load_dotenv
+import yaml
+from yahoo_oauth import OAuth2
 
-load_dotenv()
+class YahooApiHandler:
+    """
+A class to handle authentication and requests to the Yahoo Fantasy API.
+    """
+    def __init__(self, config_path='config/config.yaml'):
+        """
+        Initializes the YahooApiHandler.
 
-class YahooAPI:
-    def __init__(self):
-        self.client_id = os.getenv("CLIENT_ID")
-        self.client_secret = os.getenv("CLIENT_SECRET")
-        self.redirect_uri = "oob"  # Out-of-band for installed apps
-        self.token_url = "https://api.login.yahoo.com/oauth2/get_token"
-        self.authorization_url = "https://api.login.yahoo.com/oauth2/request_auth"
-        self.base_api_url = "https://fantasysports.yahooapis.com/fantasy/v2"
-        self.token_file = "yahoo_token.json"
-        self.session = self._get_session()
+        Args:
+            config_path (str): Path to the configuration file.
+        """
+        if not os.path.exists(config_path):
+            raise FileNotFoundError(f"Configuration file not found at {config_path}")
+        with open(config_path, 'r') as f:
+            self.config = yaml.safe_load(f)
+        
+        self.oauth = self._authenticate()
 
-    def _save_token(self, token):
-        with open(self.token_file, "w") as f:
-            json.dump(token, f)
+    def _authenticate(self):
+        """
+        Authenticates with the Yahoo API using OAuth2.
 
-    def _load_token(self):
-        try:
-            with open(self.token_file, "r") as f:
-                return json.load(f)
-        except FileNotFoundError:
-            return None
-
-    def _get_session(self):
-        token = self._load_token()
-        if token:
-            return OAuth2Session(
-                self.client_id,
-                token=token,
-                auto_refresh_url=self.token_url,
-                auto_refresh_kwargs={
-                    "client_id": self.client_id,
-                    "client_secret": self.client_secret,
-                },
-                token_updater=self._save_token,
-            )
-
-        # If no token, start the authorization flow
-        oauth = OAuth2Session(
-            self.client_id, redirect_uri=self.redirect_uri
-        )
-        authorization_url, state = oauth.authorization_url(self.authorization_url)
-
-        print(f"Please go to this URL and authorize the application:\n{authorization_url}")
-        authorization_code = input("Enter the authorization code: ")
-
-        token = oauth.fetch_token(
-            self.token_url,
-            code=authorization_code,
-            client_secret=self.client_secret,
-        )
-        self._save_token(token)
+        Returns:
+            OAuth2: An authenticated OAuth2 object.
+        """
+        oauth = OAuth2(self.config['yahoo_api']['consumer_key'],
+                       self.config['yahoo_api']['consumer_secret'])
+        if not oauth.token_is_valid():
+            oauth.refresh_access_token()
         return oauth
 
-    def get(self, url):
-        response = self.session.get(f"{self.base_api_url}/{url}?format=json")
-        response.raise_for_status()  # Raise an exception for bad status codes
+    def get_user_leagues(self):
+        """
+        Retrieves the user's fantasy baseball leagues.
+
+        Returns:
+            dict: A dictionary containing the user's league information.
+        """
+        url = "https://fantasysports.yahooapis.com/fantasy/v2/users;use_login=1/games;game_keys=mlb/leagues"
+        response = self.oauth.session.get(url, params={'format': 'json'})
+        response.raise_for_status()
+        return response.json()
+
+    def get_league_details(self, league_id):
+        """
+        Retrieves details for a specific fantasy league.
+
+        Args:
+            league_id (str): The ID of the league to retrieve.
+
+        Returns:
+            dict: A dictionary containing the league details.
+        """
+        url = f"https://fantasysports.yahooapis.com/fantasy/v2/league/mlb.l.{league_id}"
+        response = self.oauth.session.get(url, params={'format': 'json'})
+        response.raise_for_status()
         return response.json()
