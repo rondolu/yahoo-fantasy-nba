@@ -1,8 +1,10 @@
+"""
 This module performs analysis on NBA player stats for the 2025 season.
 
 It includes functions for data loading and cleaning, generating player performance
 leaderboard charts, analyzing player efficiency, and identifying top comprehensive
 wing players. It also generates a 9-category fantasy basketball ranking.
+"""
 
 import pandas as pd
 import matplotlib.pyplot as plt
