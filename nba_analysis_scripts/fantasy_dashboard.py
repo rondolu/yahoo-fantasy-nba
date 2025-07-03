@@ -10,10 +10,11 @@ import pandas as pd
 import os
 import plotly.express as px
 
-# Get the directory of the current script
+# Get the project root directory
 script_dir = os.path.dirname(os.path.abspath(__file__))
+project_root = os.path.abspath(os.path.join(script_dir, os.pardir))
 # Define the absolute path to the CSV file
-CSV_FILE_PATH = os.path.join(script_dir, "charts", "nba_fantasy_ranking_top150.csv")
+CSV_FILE_PATH = os.path.join(project_root, "data", "nba_fantasy_ranking_top150.csv")
 
 st.set_page_config(layout="wide")
 st.title('🏀 Yahoo Fantasy Basketball 2025 Draft Ranking')
@@ -31,7 +32,7 @@ def load_data(path):
         pd.DataFrame: A DataFrame containing the player ranking data.
     """
     if not os.path.exists(path):
-        st.error(f"Error: CSV file not found at {path}. Please ensure 'nba_fantasy_ranking_top150.csv' exists in the 'charts' directory relative to the script.")
+        st.error(f"Error: CSV file not found at {path}. Please ensure 'nba_fantasy_ranking_top150.csv' exists in the 'data' directory.")
         return pd.DataFrame()
     df = pd.read_csv(path)
     return df
