@@ -32,8 +32,12 @@ def load_data(path):
         pd.DataFrame: A DataFrame containing the player ranking data.
     """
     if not os.path.exists(path):
-        st.error(f"Error: CSV file not found at {path}. Please ensure 'nba_fantasy_ranking_top150.csv' exists in the 'data' directory.")
-        return pd.DataFrame()
+        st.error(f"Error: CSV file not found at {path}. Running analysis script to generate it.")
+        import subprocess
+        subprocess.run(["python", os.path.join(project_root, "nba_analysis_scripts", "nba_analysis.py")])
+        if not os.path.exists(path):
+            st.error(f"Failed to generate CSV file. Please check the logs.")
+            return pd.DataFrame()
     df = pd.read_csv(path)
     return df
 
