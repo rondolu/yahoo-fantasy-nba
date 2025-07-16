@@ -20,7 +20,7 @@ st.set_page_config(layout="wide")
 st.title('🏀 Yahoo Fantasy Basketball 2025 Draft Ranking')
 st.markdown('This dashboard provides a predicted ranking of NBA players for your Yahoo Fantasy Basketball league (9-category format), based on the provided 2025 player stats.')
 
-@st.cache_data
+@st.cache_data(ttl=3600)
 def load_data(path):
     """
     Loads player ranking data from a CSV file.
@@ -50,7 +50,8 @@ def load_data(path):
     df = pd.read_csv(path)
     return df
 
-df_ranked = load_data(CSV_FILE_PATH)
+with st.spinner('Loading data...'):
+    df_ranked = load_data(CSV_FILE_PATH)
 
 if not df_ranked.empty:
     st.sidebar.header('Filter Options')
@@ -71,7 +72,7 @@ if not df_ranked.empty:
 
     st.subheader('Top 150 Fantasy Players')
     st.write(f'Displaying {len(filtered_df)} of {len(df_ranked)} players.')
-    st.dataframe(filtered_df)
+    st.dataframe(filtered_df, use_container_width=True)
 
     st.subheader('Top 20 Players by Fantasy Score')
     if not filtered_df.empty:
