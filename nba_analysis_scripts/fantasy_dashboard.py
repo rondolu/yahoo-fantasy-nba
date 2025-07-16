@@ -34,7 +34,16 @@ def load_data(path):
     if not os.path.exists(path):
         st.error(f"Error: CSV file not found at {path}. Running analysis script to generate it.")
         import subprocess
-        subprocess.run(["python", os.path.join(project_root, "nba_analysis_scripts", "nba_analysis.py")])
+        try:
+            result = subprocess.run(
+                ["python", os.path.join(project_root, "nba_analysis_scripts", "nba_analysis.py")],
+                check=True,
+                capture_output=True,
+                text=True
+            )
+        except subprocess.CalledProcessError as e:
+            st.error(f"Failed to generate CSV file. Error:\n{e.stderr}")
+            return pd.DataFrame()
         if not os.path.exists(path):
             st.error(f"Failed to generate CSV file. Please check the logs.")
             return pd.DataFrame()
